@@ -1,0 +1,75 @@
+---
+- hosts: all
+  tasks:
+  - name: updating apt
+    apt:
+      update_cache: yes
+  - name: instaling openjdk/jre
+    apt:
+      name: default-jre
+      state: present
+  - name: adding apt-key for jenkins
+    apt_key:
+      url: https://pkg.jenkins.io/debian/jenkins.io.key
+      state: present
+  - name: adding repository for jenkins
+    apt_repository:
+      repo: 'deb https://pkg.jenkins.io/debian binary/'
+      state: present
+  - name: updating repos
+    apt:
+      update_cache: yes
+  - name: installing application
+    apt:
+      name: jenkins
+      state: latest
+  - name: starting and enableing service
+    service:
+      name: jenkins
+      state: started
+      enabled: yes
+  - name: adding apt-key for influxdb
+    apt_key:
+      url: https://repos.influxdata.com/influxdb.key
+      state: present
+  - name: adding repository for influxdb
+    apt_repository:
+      repo: 'deb https://repos.influxdata.com/ubuntu bionic stable'
+      state: present
+  - name: updating repos
+    apt:
+      update_cache: yes
+  - name: installing application influxdb
+    apt:
+      name: influxdb
+      state: latest
+  - name: starting and enableing service
+    service:
+      name: influxdb
+      state: started
+      enabled: yes
+  - name: adding apt-key for grafana
+    apt_key: 
+      url: https://packages.grafana.com/gpg.key
+      state: present
+  - name: adding repository for jenkins
+    apt_repository:
+      repo: 'deb https://packages.grafana.com/oss/deb stable main'
+      state: present
+  - name: updating repos
+    apt:
+      update_cache: yes
+  - name: installing application grafana
+    apt:
+      name: grafana
+      state: latest
+  - name: starting and enableing service
+    service:
+      name: grafana-server
+      state: started
+      enabled: yes
+  - name: fetching jenkins secret file
+    fetch:
+      src: /var/lib/jenkins/secrets/initialAdminPassword 
+      dest: ./secret
+      flat: yes
